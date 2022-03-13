@@ -10,14 +10,14 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:rails-routes-navigator.helloWorld"
+    "onCommand:rails-routes-navigator.railsRoutesNavigate"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "rails-routes-navigator.helloWorld",
-        "title": "Hello World"
+        "command": "rails-routes-navigator.railsRoutesNavigate",
+        "title": "Rails Routes Navigator: Rails Routes Navigate"
       }
     ]
   },
