@@ -9,7 +9,15 @@ export function activate(context: vscode.ExtensionContext) {
         (!input) ? 'Input some chars for Rails routes' : undefined
     }).then(
       inputString => {
-        vscode.window.showInformationMessage(inputString);
+        if (!inputString) { return; };
+
+        const panel = vscode.window.createWebviewPanel(
+          'railsRoutesNavigator',
+          'Rails Routes Navigator',
+          vscode.ViewColumn.Two,
+          {}
+        );
+        panel.webview.html = getWebviewContent(panel.webview, inputString);
       }
     );
   });
@@ -18,3 +26,17 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() { }
+
+function getWebviewContent(webview: vscode.Webview, inputString: string) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} https:;">
+  <title>Rails Routes Navigator</title>
+</head>
+<body>
+  <h1>Rails Routes Navigator</h1>
+  ${inputString}
+</body>
+</html>`;
+}
