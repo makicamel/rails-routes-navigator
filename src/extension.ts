@@ -3,22 +3,33 @@ import * as vscode from 'vscode';
 export function activate(context: vscode.ExtensionContext) {
   let currentPanel: vscode.WebviewPanel | undefined = undefined;
   let disposable = vscode.commands.registerCommand('rails-routes-navigator.railsRoutesNavigate', () => {
-    currentPanel = vscode.window.createWebviewPanel(
-      'railsRoutesNavigator',
-      'Rails Routes Navigator',
-      vscode.ViewColumn.Two,
-      {
-        enableScripts: true,
-      }
-    );
+    const columnToShowIn = vscode.window.activeTextEditor
+      ? vscode.window.activeTextEditor.viewColumn
+      : undefined;
 
-    currentPanel.webview.html = getWebviewContent(currentPanel.webview);
+    if (currentPanel) {
+      currentPanel.reveal(columnToShowIn);
+    } else {
+      currentPanel = vscode.window.createWebviewPanel(
+        'railsRoutesNavigator',
+        'Rails Routes Navigator',
+        vscode.ViewColumn.Two,
+        {
+          enableScripts: true,
+        }
+      );
+
+      currentPanel.webview.html = getWebviewContent(currentPanel.webview);
+      currentPanel.onDidDispose(
+        () => currentPanel = undefined,
+        null,
+        context.subscriptions
+      );
+    }
   });
 
   context.subscriptions.push(disposable);
 }
-
-export function deactivate() { }
 
 function getWebviewContent(webview: vscode.Webview) {
   return `<!DOCTYPE html>
