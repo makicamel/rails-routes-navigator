@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { loadRoutes, parseRoutesText, parseRoutesMap } from './parser';
 
 export function activate(context: vscode.ExtensionContext) {
   let currentPanel: vscode.WebviewPanel | undefined = undefined;
@@ -19,7 +20,15 @@ export function activate(context: vscode.ExtensionContext) {
         }
       );
 
-      currentPanel.webview.html = getWebviewContent(currentPanel.webview);
+      const rawRoutes = loadRoutes(`${__dirname}/routes.txt`);
+      let routes = [];
+      if (rawRoutes) {
+        const routesMap = parseRoutesText(rawRoutes);
+        routes = parseRoutesMap(routesMap);
+      }
+      else { /* TODO: showInformationMessage and abort */ }
+
+      currentPanel.webview.html = getWebviewContent(currentPanel.webview, routes);
       currentPanel.onDidDispose(
         () => currentPanel = undefined,
         null,
@@ -31,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposable);
 }
 
-function getWebviewContent(webview: vscode.Webview) {
+function getWebviewContent(webview: vscode.Webview, routes: Array<Array<string>>) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,6 +51,7 @@ function getWebviewContent(webview: vscode.Webview) {
   <h1>Rails Routes Navigator</h1>
   <input type="search" id="search" placeholder="Input some chars for Rails routes" />
   <div id="input-chars"></div>
+  <div id="allRoutes">${routes}</div>
 
   <script nonce="11032b2d27d2">
     let search = document.getElementById('search');
