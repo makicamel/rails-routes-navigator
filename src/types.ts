@@ -4,3 +4,9 @@ export type Route = {
   uri: string,
   controllerAction: string,
 };
+
+export function createRoutesHtml(route: Route) {
+  return `
+  <p>${route.verb}:${route.uri}:${route.controllerAction}</p>
+  `;
+}
