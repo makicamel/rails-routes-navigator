@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
-import { loadRoutes, parseRoutesText, parseRoutesMap } from './parser';
+import { loadRoutes, parseRoutes } from './parser';
+import { Route } from './types';
 
 export function activate(context: vscode.ExtensionContext) {
   let currentPanel: vscode.WebviewPanel | undefined = undefined;
@@ -21,11 +22,8 @@ export function activate(context: vscode.ExtensionContext) {
       );
 
       const rawRoutes = loadRoutes(`${__dirname}/routes.txt`);
-      let routes = [];
-      if (rawRoutes) {
-        const routesMap = parseRoutesText(rawRoutes);
-        routes = parseRoutesMap(routesMap);
-      }
+      let routes: Array<Route> = [];
+      if (rawRoutes) { routes = parseRoutes(rawRoutes); }
       else { /* TODO: showInformationMessage and abort */ }
 
       currentPanel.webview.html = getWebviewContent(currentPanel.webview, routes);
@@ -40,7 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposable);
 }
 
-function getWebviewContent(webview: vscode.Webview, routes: Array<Array<string>>) {
+function getWebviewContent(webview: vscode.Webview, routes: Array<Route>) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
