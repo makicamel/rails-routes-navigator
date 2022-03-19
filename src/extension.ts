@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { loadRoutes, parseRoutes } from './parser';
+import { loadRoutes, parseRoutes } from './routes';
 import { Route, createRoutesHtml, isMatchedRoute } from './types';
 
 export function activate(context: vscode.ExtensionContext) {
