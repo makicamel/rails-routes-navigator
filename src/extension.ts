@@ -26,7 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
     try {
       routes = new Routes();
     } catch (error) {
-      vscode.window.showErrorMessage(`failed to read ${error}🐛`);
+      vscode.window.showErrorMessage(`${error}`);
       return;
     }
 

@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { execSync } from 'child_process';
 
 export class Routes {
   private readonly allRoutes: Array<Route>;
@@ -6,6 +7,7 @@ export class Routes {
   private readonly routesFilePath = `${__dirname}/routes.txt`;
 
   constructor() {
+    this.execAndSaveRoutes();
     const routesString = this.load();
     this.allRoutes = routesString ? this.parse(routesString) : [];
     this.routes = this.allRoutes;
@@ -18,6 +20,17 @@ export class Routes {
   public filterWith(text: string): Routes {
     this.routes = this.allRoutes.filter((route) => route.isMatchedRoute(text));
     return this;
+  }
+
+  private execAndSaveRoutes(): void {
+    const routesHeader = 'Controller#Action';
+    const result = execSync('rails routes');
+    const stdout = result.toString();
+    if (stdout.includes(routesHeader)) {
+      fs.writeFileSync(this.routesFilePath, stdout);
+    } else {
+      throw Error('Failed to exec rails routes 💎');
+    }
   }
 
   private load() {
