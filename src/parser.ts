@@ -14,7 +14,7 @@ export function parseRoutes(rawRoutes: string): Array<Route> {
   const lines = rawRoutes.split(/[\n\r\n]/).filter(line => /(GET|POST|PUT|PATCH|DELETE)/.test(line));
   const routes: Array<Route> = [];
   lines.forEach((line) => {
-    const routesFragments = line.match(/\s*([\s\w]+)\s+(\w+)\s+([-_/\w().:]+)\s+([\w#]+)/)?.slice(1);
+    const routesFragments = line.match(/\s*([\s\w]+)\s+([|\w]+)\s+([-_/\w().:]+)\s+([/\w#]+)/)?.slice(1);
     if (routesFragments) {
       routes.push({
         prefix: routesFragments[0],
