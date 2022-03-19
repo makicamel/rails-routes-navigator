@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
-import { loadRoutes, parseRoutes } from './routes';
-import { Route, createRoutesHtml, isMatchedRoute } from './types';
+import { loadRoutes, parseRoutes, Route, createRoutesHtml, isMatchedRoute } from './routes';
 
 export function activate(context: vscode.ExtensionContext) {
   let currentPanel: vscode.WebviewPanel | undefined = undefined;
