@@ -26,7 +26,10 @@ export function activate(context: vscode.ExtensionContext) {
       if (rawRoutes) { routes = parseRoutes(rawRoutes); }
       else { /* TODO: showInformationMessage and abort */ }
 
-      currentPanel.webview.html = getWebviewContent(currentPanel.webview, routes);
+      currentPanel.webview.html = getWebviewContent(currentPanel.webview);
+      currentPanel.webview.postMessage(
+        { routes: routes.map(route => createRoutesHtml(route)).join('') }
+      );
 
       currentPanel.webview.onDidReceiveMessage(
         message => {
@@ -53,7 +56,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposable);
 }
 
-function getWebviewContent(webview: vscode.Webview, routes: Array<Route>) {
+function getWebviewContent(webview: vscode.Webview) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -63,7 +66,7 @@ function getWebviewContent(webview: vscode.Webview, routes: Array<Route>) {
 <body>
   <h1>Rails Routes Navigator</h1>
   <input type="search" id="search" placeholder="Input some chars for Rails routes" />
-  <div id="allRoutes">${routes.map(route => createRoutesHtml(route)).join('')}</div>
+  <div id="allRoutes"></div>
 
   <script nonce="11032b2d27d2">
     const vscode = acquireVsCodeApi();
