@@ -1,12 +1,14 @@
 import * as fs from 'fs';
 
 export class Routes {
+  private readonly allRoutes: Array<Route>;
   private routes: Array<Route>;
   private readonly routesFilePath = `${__dirname}/routes.txt`;
 
   constructor() {
     const routesString = this.load();
-    this.routes = routesString ? this.parse(routesString) : [];
+    this.allRoutes = routesString ? this.parse(routesString) : [];
+    this.routes = this.allRoutes;
   }
 
   public createHtml(): string {
@@ -14,7 +16,7 @@ export class Routes {
   }
 
   public filterWith(text: string): Routes {
-    this.routes = this.routes.filter((route) => route.isMatchedRoute(text));
+    this.routes = this.allRoutes.filter((route) => route.isMatchedRoute(text));
     return this;
   }
 
