@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { loadRoutes, parseRoutes, Route, createRoutesHtml, isMatchedRoute } from './routes';
+import { Routes } from './routes';
 
 export function activate(context: vscode.ExtensionContext) {
   let currentPanel: vscode.WebviewPanel | undefined = undefined;
@@ -22,25 +22,21 @@ export function activate(context: vscode.ExtensionContext) {
       }
     );
 
-    const rawRoutes = loadRoutes(`${__dirname}/routes.txt`);
-    let routes: Array<Route> = [];
-    if (rawRoutes) { routes = parseRoutes(rawRoutes); }
-    else { /* TODO: showInformationMessage and abort */ }
+    let routes: Routes;
+    try {
+      routes = new Routes();
+    } catch (error) {
+      vscode.window.showErrorMessage(`failed to read ${error}🐛`);
+      return;
+    }
 
     currentPanel.webview.html = getWebviewContent(currentPanel.webview);
-    currentPanel.webview.postMessage(
-      { routes: routes.map(route => createRoutesHtml(route)).join('') }
-    );
-
+    currentPanel.webview.postMessage({ routes: routes.createHtml() });
     currentPanel.webview.onDidReceiveMessage(
       message => {
-        if (!currentPanel) { return; };
-
-        const filteredRoutes = routes.filter(route => isMatchedRoute(message.text, route));
-        currentPanel.webview.postMessage(
-          { routes: filteredRoutes.map(route => createRoutesHtml(route)).join('') }
-        );
-        return;
+        if (currentPanel) {
+          currentPanel.webview.postMessage({ routes: routes.filterWith(message.text).createHtml() });
+        }
       },
       undefined,
       context.subscriptions
