@@ -11,46 +11,47 @@ export function activate(context: vscode.ExtensionContext) {
 
     if (currentPanel) {
       currentPanel.reveal(columnToShowIn);
-    } else {
-      currentPanel = vscode.window.createWebviewPanel(
-        'railsRoutesNavigator',
-        'Rails Routes Navigator',
-        vscode.ViewColumn.Two,
-        {
-          enableScripts: true,
-        }
-      );
-
-      const rawRoutes = loadRoutes(`${__dirname}/routes.txt`);
-      let routes: Array<Route> = [];
-      if (rawRoutes) { routes = parseRoutes(rawRoutes); }
-      else { /* TODO: showInformationMessage and abort */ }
-
-      currentPanel.webview.html = getWebviewContent(currentPanel.webview);
-      currentPanel.webview.postMessage(
-        { routes: routes.map(route => createRoutesHtml(route)).join('') }
-      );
-
-      currentPanel.webview.onDidReceiveMessage(
-        message => {
-          if (!currentPanel) { return; };
-
-          const filteredRoutes = routes.filter(route => isMatchedRoute(message.text, route));
-          currentPanel.webview.postMessage(
-            { routes: filteredRoutes.map(route => createRoutesHtml(route)).join('') }
-          );
-          return;
-        },
-        undefined,
-        context.subscriptions
-      );
-
-      currentPanel.onDidDispose(
-        () => currentPanel = undefined,
-        null,
-        context.subscriptions
-      );
+      return;
     }
+
+    currentPanel = vscode.window.createWebviewPanel(
+      'railsRoutesNavigator',
+      'Rails Routes Navigator',
+      vscode.ViewColumn.Two,
+      {
+        enableScripts: true,
+      }
+    );
+
+    const rawRoutes = loadRoutes(`${__dirname}/routes.txt`);
+    let routes: Array<Route> = [];
+    if (rawRoutes) { routes = parseRoutes(rawRoutes); }
+    else { /* TODO: showInformationMessage and abort */ }
+
+    currentPanel.webview.html = getWebviewContent(currentPanel.webview);
+    currentPanel.webview.postMessage(
+      { routes: routes.map(route => createRoutesHtml(route)).join('') }
+    );
+
+    currentPanel.webview.onDidReceiveMessage(
+      message => {
+        if (!currentPanel) { return; };
+
+        const filteredRoutes = routes.filter(route => isMatchedRoute(message.text, route));
+        currentPanel.webview.postMessage(
+          { routes: filteredRoutes.map(route => createRoutesHtml(route)).join('') }
+        );
+        return;
+      },
+      undefined,
+      context.subscriptions
+    );
+
+    currentPanel.onDidDispose(
+      () => currentPanel = undefined,
+      null,
+      context.subscriptions
+    );
   });
 
   context.subscriptions.push(disposable);
