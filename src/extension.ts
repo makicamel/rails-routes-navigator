@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { loadRoutes, parseRoutes } from './parser';
-import { Route, createRoutesHtml } from './types';
+import { Route, createRoutesHtml, isMatchedRoute } from './types';
 
 export function activate(context: vscode.ExtensionContext) {
   let currentPanel: vscode.WebviewPanel | undefined = undefined;
@@ -27,6 +27,20 @@ export function activate(context: vscode.ExtensionContext) {
       else { /* TODO: showInformationMessage and abort */ }
 
       currentPanel.webview.html = getWebviewContent(currentPanel.webview, routes);
+
+      currentPanel.webview.onDidReceiveMessage(
+        message => {
+          if (!currentPanel) { return; };
+
+          currentPanel.webview.html = getWebviewContent(
+            currentPanel.webview, routes.filter(route => isMatchedRoute(message.text, route))
+          );
+          return;
+        },
+        undefined,
+        context.subscriptions
+      );
+
       currentPanel.onDidDispose(
         () => currentPanel = undefined,
         null,
@@ -48,15 +62,16 @@ function getWebviewContent(webview: vscode.Webview, routes: Array<Route>) {
 <body>
   <h1>Rails Routes Navigator</h1>
   <input type="search" id="search" placeholder="Input some chars for Rails routes" />
-  <div id="input-chars"></div>
   <div id="allRoutes">${routes.map(route => createRoutesHtml(route)).join('')}</div>
 
   <script nonce="11032b2d27d2">
-    let search = document.getElementById('search');
-    const chars = document.getElementById('input-chars');
-
+    const vscode = acquireVsCodeApi();
+    const search = document.getElementById('search');
     search.addEventListener('keyup', () => {
-      chars.innerHTML = search.value;
+      vscode.postMessage({
+        command: 'keyup',
+        text: search.value
+      })
     });
   </script>
 
