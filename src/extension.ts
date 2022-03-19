@@ -66,7 +66,18 @@ function getWebviewContent(webview: vscode.Webview) {
 <body>
   <h1>Rails Routes Navigator</h1>
   <input type="search" id="search" placeholder="Input some chars for Rails routes" />
-  <div id="allRoutes"></div>
+
+  <table>
+    <thead>
+      <tr>
+        <td>Verb</td>
+        <td>URI Pattern</td>
+        <td>Controller#Action</td>
+        <td>Prefix</td>
+      </tr>
+    </thead>
+    <tbody id="allRoutes"></tbody>
+  </table>
 
   <script nonce="11032b2d27d2">
     const vscode = acquireVsCodeApi();

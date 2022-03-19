@@ -13,7 +13,10 @@ export function isMatchedRoute(input: string, route: Route): boolean {
 }
 
 export function createRoutesHtml(route: Route) {
-  return `
-  <p>${route.verb}:${route.uri}:${route.controllerAction}</p>
-  `;
+  return `<tr>
+  <td>${route.verb}</td>
+  <td>${route.uri}</td>
+  <td>${route.controllerAction}</td>
+  <td>${route.prefix}</td>
+</tr>`;
 }
