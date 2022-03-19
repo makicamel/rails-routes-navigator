@@ -32,8 +32,9 @@ export function activate(context: vscode.ExtensionContext) {
         message => {
           if (!currentPanel) { return; };
 
-          currentPanel.webview.html = getWebviewContent(
-            currentPanel.webview, routes.filter(route => isMatchedRoute(message.text, route))
+          const filteredRoutes = routes.filter(route => isMatchedRoute(message.text, route));
+          currentPanel.webview.postMessage(
+            { routes: filteredRoutes.map(route => createRoutesHtml(route)).join('') }
           );
           return;
         },
@@ -66,12 +67,19 @@ function getWebviewContent(webview: vscode.Webview, routes: Array<Route>) {
 
   <script nonce="11032b2d27d2">
     const vscode = acquireVsCodeApi();
+
     const search = document.getElementById('search');
     search.addEventListener('keyup', () => {
       vscode.postMessage({
         command: 'keyup',
         text: search.value
       })
+    });
+
+    const allRoutes = document.getElementById('allRoutes');
+    window.addEventListener('message', event => {
+      const message = event.data;
+      allRoutes.innerHTML = message.routes;
     });
   </script>
 
