@@ -8,6 +8,7 @@ export type Route = {
 export function isMatchedRoute(input: string, route: Route): boolean {
   return route.prefix.includes(input) ||
     route.verb.includes(input) ||
+    route.verb.toLowerCase().includes(input) ||
     route.uri.includes(input) ||
     route.controllerAction.includes(input);
 }
