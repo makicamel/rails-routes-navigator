@@ -5,12 +5,8 @@ import { Routes } from './routes';
 export function activate(context: vscode.ExtensionContext) {
   let currentPanel: vscode.WebviewPanel | undefined = undefined;
   let disposable = vscode.commands.registerCommand('rails-routes-navigator.railsRoutesNavigate', () => {
-    const columnToShowIn = vscode.window.activeTextEditor
-      ? vscode.window.activeTextEditor.viewColumn
-      : undefined;
-
     if (currentPanel) {
-      currentPanel.reveal(columnToShowIn);
+      currentPanel.reveal(vscode.ViewColumn.Two);
       return;
     }
 
