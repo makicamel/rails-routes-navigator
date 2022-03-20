@@ -48,13 +48,14 @@ export class Routes {
     const lines = routesString.split(/[\n\r\n]/).filter(line => /(GET|POST|PUT|PATCH|DELETE)/.test(line));
     const routes: Array<Route> = [];
     lines.forEach((line) => {
-      const routesFragments = line.match(/\s*([\s\w]+)\s+([|\w]+)\s+([-_/\w().:]+)\s+([/\w#]+)/)?.slice(1);
+      const routesFragments = line.match(/\s*([\s\w]+)\s+([|\w]+)\s+([-_/\w().:]+)\s+([/\w]+)#([/\w]+)/)?.slice(1);
       if (routesFragments) {
         const route = new Route(
           routesFragments[0], // prefix
           routesFragments[1], // verb
           routesFragments[2], // uri
-          routesFragments[3], // controllerAction
+          routesFragments[3], // controller
+          routesFragments[4], // action
         );
         routes.push(route);
       }
@@ -87,13 +88,15 @@ class Route {
   private readonly prefix: string;
   private readonly verb: string;
   private readonly uri: string;
-  private readonly controllerAction: string;
+  private readonly controller: string;
+  private readonly action: string;
 
-  constructor(prefix: string, verb: string, uri: string, controllerAction: string) {
+  constructor(prefix: string, verb: string, uri: string, controller: string, action: string) {
     this.prefix = prefix;
     this.verb = verb;
     this.uri = uri;
-    this.controllerAction = controllerAction;
+    this.controller = controller;
+    this.action = action;
   }
 
   public isMatchedRoute(input: string): boolean {
@@ -101,14 +104,15 @@ class Route {
       this.verb.includes(input) ||
       this.verb.toLowerCase().includes(input) ||
       this.uri.includes(input) ||
-      this.controllerAction.includes(input);
+      this.controller.includes(input) ||
+      this.action.includes(input);
   }
 
   public createHtml(): string {
     return `<tr>
       <td class="verb ${this.verbClass}">${this.verb}</td>
       <td>${this.uri}</td>
-      <td>${this.controllerAction}</td>
+      <td>${this.controller}#${this.action}</td>
       <td>${this.prefix}</td>
     </tr>`;
   }
