@@ -38,9 +38,9 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
     }
-    const onDiskPath = vscode.Uri.file(path.join(context.extensionPath, 'src', 'style.css'));
-    const stylesheetUri = onDiskPath.with({ scheme: 'vscode-resource' });
-    currentPanel.webview.html = getWebviewContent(currentPanel.webview, stylesheetUri);
+    const scriptUri = vscode.Uri.file(path.join(context.extensionPath, 'src', 'script.js')).with({ scheme: 'vscode-resource' });
+    const stylesheetUri = vscode.Uri.file(path.join(context.extensionPath, 'src', 'style.css')).with({ scheme: 'vscode-resource' });
+    currentPanel.webview.html = getWebviewContent(currentPanel.webview, scriptUri, stylesheetUri);
     currentPanel.webview.postMessage({ routes: routes.createHtml() });
     currentPanel.webview.onDidReceiveMessage(
       message => {
@@ -62,11 +62,12 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposable);
 }
 
-function getWebviewContent(webview: vscode.Webview, stylesheetUri: vscode.Uri) {
+function getWebviewContent(webview: vscode.Webview, scriptUri: vscode.Uri, stylesheetUri: vscode.Uri) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' ${webview.cspSource} https:; script-src 'nonce-11032b2d27d2' ">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' ${webview.cspSource} https:;">
+  <script defer src="${scriptUri}" type="text/javascript"></script>
   <link href="${stylesheetUri}" rel="stylesheet" type="text/css">
   <title>Rails Routes Navigator</title>
 </head>
@@ -85,33 +86,6 @@ function getWebviewContent(webview: vscode.Webview, stylesheetUri: vscode.Uri) {
     </thead>
     <tbody id="allRoutes"></tbody>
   </table>
-
-  <script nonce="11032b2d27d2">
-    const vscode = acquireVsCodeApi();
-    const previousState = vscode.getState();
-    let previousRoutes = previousState ? previousState.routes : '<tr></tr>';
-    let previousInputText = previousState ? previousState.inputText : '';
-
-    const search = document.getElementById('search');
-    search.value = previousInputText;
-    search.addEventListener('keyup', () => {
-      vscode.postMessage({
-        command: 'keyup',
-        text: search.value
-      })
-    });
-
-    const allRoutes = document.getElementById('allRoutes');
-    allRoutes.innerHTML = previousRoutes;
-
-    window.addEventListener('message', event => {
-      const inputText = search.value;
-      const routes = event.data.routes;
-      allRoutes.innerHTML = routes;
-      vscode.setState({ routes, inputText });
-    });
-  </script>
-
 </body>
 </html>`;
 }
