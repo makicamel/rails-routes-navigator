@@ -27,7 +27,7 @@ export class Routes {
   private execAndSaveRoutes(): void {
     const currentWorkingDirectory = execSync('pwd');
     const routesHeader = 'Controller#Action';
-    const stdout = execSync(`cd ${this.workSpaceFolder.uri.path} && rails routes`).toString();
+    const stdout = execSync(`cd ${this.workSpaceFolder.uri.path} && bundle exec rails routes`).toString();
     execSync(`cd ${currentWorkingDirectory}`);
     if (stdout.includes(routesHeader)) {
       fs.writeFileSync(this.routesFilePath, stdout);
