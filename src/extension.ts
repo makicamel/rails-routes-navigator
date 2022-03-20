@@ -66,7 +66,7 @@ function getWebviewContent(webview: vscode.Webview, scriptUri: vscode.Uri, style
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' ${webview.cspSource} https:;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' ${webview.cspSource} https:; script-src ${webview.cspSource} 'unsafe-inline'">
   <script defer src="${scriptUri}" type="text/javascript"></script>
   <link href="${stylesheetUri}" rel="stylesheet" type="text/css">
   <title>Rails Routes Navigator</title>
