@@ -23,11 +23,17 @@ export function activate(context: vscode.ExtensionContext) {
     );
 
     let routes: Routes;
-    try {
-      routes = new Routes();
-    } catch (error) {
-      vscode.window.showErrorMessage(`${error}`);
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders) {
+      vscode.window.showErrorMessage('There is no workspace.');
       return;
+    } else {
+      try {
+        routes = new Routes(workspaceFolders[0]);
+      } catch (error) {
+        vscode.window.showErrorMessage(`${error}`);
+        return;
+      }
     }
 
     currentPanel.webview.html = getWebviewContent(currentPanel.webview);

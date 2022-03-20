@@ -1,12 +1,14 @@
 import * as fs from 'fs';
+import { WorkspaceFolder } from 'vscode';
 import { execSync } from 'child_process';
 
 export class Routes {
   private readonly allRoutes: Array<Route>;
   private routes: Array<Route>;
-  private readonly routesFilePath = `${__dirname}/routes.txt`;
+  private readonly workSpaceFolder: WorkspaceFolder;
 
-  constructor() {
+  constructor(workSpaceFolder: WorkspaceFolder) {
+    this.workSpaceFolder = workSpaceFolder;
     this.execAndSaveRoutes();
     const routesString = this.load();
     this.allRoutes = routesString ? this.parse(routesString) : [];
@@ -23,9 +25,10 @@ export class Routes {
   }
 
   private execAndSaveRoutes(): void {
+    const currentWorkingDirectory = execSync('pwd');
     const routesHeader = 'Controller#Action';
-    const result = execSync('rails routes');
-    const stdout = result.toString();
+    const stdout = execSync(`cd ${this.workSpaceFolder.uri.path} && rails routes`).toString();
+    execSync(`cd ${currentWorkingDirectory}`);
     if (stdout.includes(routesHeader)) {
       fs.writeFileSync(this.routesFilePath, stdout);
     } else {
@@ -53,6 +56,10 @@ export class Routes {
       }
     });
     return routes;
+  }
+
+  private get routesFilePath(): string {
+    return `${__dirname}/routes-${this.workSpaceFolder.name}.txt`;
   }
 }
 
