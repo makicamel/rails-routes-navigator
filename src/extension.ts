@@ -22,18 +22,15 @@ export function activate(context: vscode.ExtensionContext) {
 
     let routes: Routes;
     const workspaceFolders = vscode.workspace.workspaceFolders;
-    if (!workspaceFolders) {
-      vscode.window.showErrorMessage('There is no workspace.');
+    try {
+      if (!workspaceFolders) { throw Error('There is no workspace.'); }
+      routes = new Routes(workspaceFolders[0]);
+      routes.execRailsRoutes();
+    } catch (error) {
+      vscode.window.showErrorMessage(`${error}`);
       return;
-    } else {
-      try {
-        routes = new Routes(workspaceFolders[0]);
-        routes.execRailsRoutes();
-      } catch (error) {
-        vscode.window.showErrorMessage(`${error}`);
-        return;
-      }
     }
+
     const scriptUri = vscode.Uri.file(path.join(context.extensionPath, 'src', 'script.js')).with({ scheme: 'vscode-resource' });
     const stylesheetUri = vscode.Uri.file(path.join(context.extensionPath, 'src', 'style.css')).with({ scheme: 'vscode-resource' });
     currentPanel.webview.html = getWebviewContent(currentPanel.webview, scriptUri, stylesheetUri);
