@@ -56,6 +56,7 @@ export class Routes {
           routesFragments[2], // uri
           routesFragments[3], // controller
           routesFragments[4], // action
+          routes[routes.length - 1] // previousRoute
         );
         routes.push(route);
       }
@@ -91,8 +92,8 @@ class Route {
   private readonly controller: string;
   private readonly action: string;
 
-  constructor(prefix: string, verb: string, uri: string, controller: string, action: string) {
-    this.prefix = prefix;
+  constructor(prefix: string, verb: string, uri: string, controller: string, action: string, previousRoute: Route | undefined) {
+    this.prefix = (prefix === ' ' && previousRoute && controller === previousRoute.controller) ? previousRoute.prefix : prefix;
     this.verb = verb;
     this.uri = uri;
     this.controller = controller;
