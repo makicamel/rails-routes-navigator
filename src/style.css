@@ -1,0 +1,20 @@
+body.vscode-light {
+  color: black;
+}
+
+body.vscode-dark {
+  color: white;
+}
+
+body.vscode-high-contrast {
+  color: red;
+}
+
+thead td {
+  font-weight: bold;
+}
+
+#search {
+  width: 500px;
+  margin-bottom: 20px;
+}

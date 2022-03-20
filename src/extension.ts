@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { Routes } from './routes';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -19,6 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.ViewColumn.Two,
       {
         enableScripts: true,
+        localResourceRoots: [vscode.Uri.file(path.join(context.extensionPath, 'src'))],
       }
     );
 
@@ -36,8 +38,9 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
     }
-
-    currentPanel.webview.html = getWebviewContent(currentPanel.webview);
+    const onDiskPath = vscode.Uri.file(path.join(context.extensionPath, 'src', 'style.css'));
+    const stylesheetUri = onDiskPath.with({ scheme: 'vscode-resource' });
+    currentPanel.webview.html = getWebviewContent(currentPanel.webview, stylesheetUri);
     currentPanel.webview.postMessage({ routes: routes.createHtml() });
     currentPanel.webview.onDidReceiveMessage(
       message => {
@@ -59,11 +62,12 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposable);
 }
 
-function getWebviewContent(webview: vscode.Webview) {
+function getWebviewContent(webview: vscode.Webview, stylesheetUri: vscode.Uri) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' ${webview.cspSource} https:; script-src 'nonce-11032b2d27d2' ">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' ${webview.cspSource} https:; script-src 'nonce-11032b2d27d2' ">
+  <link href="${stylesheetUri}" rel="stylesheet" type="text/css">
   <title>Rails Routes Navigator</title>
 </head>
 <body>
