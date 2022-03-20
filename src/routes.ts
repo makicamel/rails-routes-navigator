@@ -3,16 +3,20 @@ import { WorkspaceFolder } from 'vscode';
 import { execSync } from 'child_process';
 
 export class Routes {
-  private readonly allRoutes: Array<Route>;
-  private routes: Array<Route>;
+  private _allRoutes!: Array<Route>;
+  private _routes!: Array<Route>;
   private readonly workSpaceFolder: WorkspaceFolder;
 
   constructor(workSpaceFolder: WorkspaceFolder) {
     this.workSpaceFolder = workSpaceFolder;
+    this.allRoutes = [];
+    this.routes = [];
+  }
+
+  public execRailsRoutes(): void {
     this.execAndSaveRoutes();
     const routesString = this.load();
-    this.allRoutes = routesString ? this.parse(routesString) : [];
-    this.routes = this.allRoutes;
+    this.routes = this.allRoutes = this.parse(routesString);
   }
 
   public createHtml(): string {
@@ -36,7 +40,7 @@ export class Routes {
     }
   }
 
-  private load() {
+  private load(): string {
     return fs.readFileSync(this.routesFilePath).toString();
   }
 
@@ -60,6 +64,22 @@ export class Routes {
 
   private get routesFilePath(): string {
     return `${__dirname}/routes-${this.workSpaceFolder.name}.txt`;
+  }
+
+  private get allRoutes(): Array<Route> {
+    return this._allRoutes || [];
+  }
+
+  private get routes(): Array<Route> {
+    return this._routes || [];
+  }
+
+  private set allRoutes(allRoutes: Array<Route>) {
+    this._allRoutes = allRoutes;
+  }
+
+  private set routes(routes: Array<Route>) {
+    this._routes = routes;
   }
 }
 

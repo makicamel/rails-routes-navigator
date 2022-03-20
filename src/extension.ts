@@ -30,6 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
     } else {
       try {
         routes = new Routes(workspaceFolders[0]);
+        routes.execRailsRoutes();
       } catch (error) {
         vscode.window.showErrorMessage(`${error}`);
         return;
