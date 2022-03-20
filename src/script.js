@@ -21,3 +21,11 @@ window.addEventListener('message', event => {
   allRoutes.innerHTML = routes;
   vscode.setState({ routes, inputText });
 });
+
+function showTextDocument(filePath, action) {
+  vscode.postMessage({
+    command: 'showTextDocument',
+    filePath: filePath,
+    action: action
+  });
+}

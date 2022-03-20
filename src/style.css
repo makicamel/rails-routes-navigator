@@ -15,6 +15,10 @@ body.vscode-light td.put {
 body.vscode-light td.delete {
   background-color: #fea6b3;
 }
+body.vscode-light tbody tr:hover {
+  cursor: pointer;
+  background-color: #e8e8e8;
+}
 
 body.vscode-dark td.verb {
   color: #323232;
@@ -32,6 +36,10 @@ body.vscode-dark td.put {
 }
 body.vscode-dark td.delete {
   background-color: #ff4121;
+}
+body.vscode-dark tbody tr:hover {
+  cursor: pointer;
+  background-color: #454545;
 }
 
 body.vscode-high-contrast {

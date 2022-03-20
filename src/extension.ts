@@ -42,6 +42,9 @@ export function activate(context: vscode.ExtensionContext) {
             if (currentPanel) {
               currentPanel.webview.postMessage({ routes: routes.filterWith(message.text).createHtml() });
             }
+          case 'showTextDocument':
+            const documentUri = vscode.Uri.file(path.join(workspaceFolders[0].uri.fsPath, message.filePath));
+            vscode.window.showTextDocument(documentUri);
         }
 
       },

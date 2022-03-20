@@ -109,7 +109,7 @@ class Route {
   }
 
   public createHtml(): string {
-    return `<tr>
+    return `<tr onclick="showTextDocument('${this.filePath}', '${this.action}')">
       <td class="verb ${this.verbClass}">${this.verb}</td>
       <td>${this.uri}</td>
       <td>${this.controller}#${this.action}</td>
@@ -128,5 +128,9 @@ class Route {
       default:
         return 'put';
     }
+  }
+
+  private get filePath(): string {
+    return `app/controllers/${this.controller}_controller.rb`;
   }
 }
