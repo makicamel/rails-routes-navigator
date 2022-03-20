@@ -7,7 +7,7 @@ const search = document.getElementById('search');
 search.value = previousInputText;
 search.addEventListener('keyup', () => {
   vscode.postMessage({
-    command: 'keyup',
+    command: 'search',
     text: search.value
   });
 });

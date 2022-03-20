@@ -40,9 +40,13 @@ export function activate(context: vscode.ExtensionContext) {
     currentPanel.webview.postMessage({ routes: routes.createHtml() });
     currentPanel.webview.onDidReceiveMessage(
       message => {
-        if (currentPanel) {
-          currentPanel.webview.postMessage({ routes: routes.filterWith(message.text).createHtml() });
+        switch (message.command) {
+          case 'search':
+            if (currentPanel) {
+              currentPanel.webview.postMessage({ routes: routes.filterWith(message.text).createHtml() });
+            }
         }
+
       },
       undefined,
       context.subscriptions
