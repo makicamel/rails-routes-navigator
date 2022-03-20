@@ -1,9 +1,37 @@
-body.vscode-light {
-  color: black;
+body.vscode-light td.verb {
+  color: #323232;
+  border-radius: 5px;
+  text-align: center;
+}
+body.vscode-light td.get {
+  background-color: #b1ded2;
+}
+body.vscode-light td.post {
+  background-color: #80dbd7;
+}
+body.vscode-light td.put {
+  background-color: #ffeabc;
+}
+body.vscode-light td.delete {
+  background-color: #fea6b3;
 }
 
-body.vscode-dark {
-  color: white;
+body.vscode-dark td.verb {
+  color: #323232;
+  border-radius: 5px;
+  text-align: center;
+}
+body.vscode-dark td.get {
+  background-color: #00a425;
+}
+body.vscode-dark td.post {
+  background-color: #0075ed;
+}
+body.vscode-dark td.put {
+  background-color: #fdc639;
+}
+body.vscode-dark td.delete {
+  background-color: #ff4121;
 }
 
 body.vscode-high-contrast {
@@ -12,6 +40,10 @@ body.vscode-high-contrast {
 
 thead td {
   font-weight: bold;
+}
+
+td {
+  padding: 2px 5px;
 }
 
 #search {

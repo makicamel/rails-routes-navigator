@@ -106,10 +106,23 @@ class Route {
 
   public createHtml(): string {
     return `<tr>
-      <td>${this.verb}</td>
+      <td class="verb ${this.verbClass}">${this.verb}</td>
       <td>${this.uri}</td>
       <td>${this.controllerAction}</td>
       <td>${this.prefix}</td>
     </tr>`;
+  }
+
+  private get verbClass(): string {
+    switch (this.verb) {
+      case 'GET':
+        return 'get';
+      case 'POST':
+        return 'post';
+      case 'DELETE':
+        return 'delete';
+      default:
+        return 'put';
+    }
   }
 }
