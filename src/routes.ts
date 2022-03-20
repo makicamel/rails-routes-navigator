@@ -64,10 +64,10 @@ export class Routes {
 }
 
 class Route {
-  prefix: string;
-  verb: string;
-  uri: string;
-  controllerAction: string;
+  private readonly prefix: string;
+  private readonly verb: string;
+  private readonly uri: string;
+  private readonly controllerAction: string;
 
   constructor(prefix: string, verb: string, uri: string, controllerAction: string) {
     this.prefix = prefix;
