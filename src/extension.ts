@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { Routes } from './routes';
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   let currentPanel: vscode.WebviewPanel | undefined = undefined;
   let disposable = vscode.commands.registerCommand('rails-routes-navigator.railsRoutesNavigate', () => {
     if (currentPanel) {
@@ -36,15 +36,20 @@ export function activate(context: vscode.ExtensionContext) {
     currentPanel.webview.html = getWebviewContent(currentPanel.webview, scriptUri, stylesheetUri);
     currentPanel.webview.postMessage({ routes: routes.createHtml() });
     currentPanel.webview.onDidReceiveMessage(
-      message => {
+      async (message) => {
         switch (message.command) {
           case 'search':
             if (currentPanel) {
               currentPanel.webview.postMessage({ routes: routes.filterWith(message.text).createHtml() });
             }
           case 'showTextDocument':
-            const documentUri = vscode.Uri.file(path.join(workspaceFolders[0].uri.fsPath, message.filePath));
-            vscode.window.showTextDocument(documentUri);
+            const document = await openDocument(workspaceFolders[0], message.filePath);
+            const index = await getActionIndex(document, message.action);
+            const options: vscode.TextDocumentShowOptions = {
+              viewColumn: vscode.ViewColumn.One,
+              selection: new vscode.Range(new vscode.Position(index, 0), new vscode.Position(index, 0)),
+            };
+            vscode.window.showTextDocument(document, options);
         }
 
       },
@@ -61,6 +66,21 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(disposable);
 }
+
+async function openDocument(workspaceFolder: vscode.WorkspaceFolder, filePath: string) {
+  return await vscode.workspace.openTextDocument(path.join(workspaceFolder.uri.fsPath, filePath));
+};
+
+async function getActionIndex(document: vscode.TextDocument, action: string) {
+  const regexp = new RegExp(`^\\s*def\\s+\\b${action}\\b\\s*$`);
+  for (let index = 0; index < document.lineCount; index++) {
+    const line = document.lineAt(index);
+    if (regexp.test(line.text)) {
+      return index;
+    }
+  }
+  return 0;
+};
 
 function getWebviewContent(webview: vscode.Webview, scriptUri: vscode.Uri, stylesheetUri: vscode.Uri) {
   return `<!DOCTYPE html>
