@@ -41,6 +41,7 @@ export async function activate(context: vscode.ExtensionContext) {
             if (currentPanel) {
               currentPanel.webview.postMessage({ routes: routes.filterWith(message.text).createHtml() });
             }
+            break;
           case 'showTextDocument':
             const document = await openDocument(workspaceFolders[0], message.filePath);
             const index = await getActionIndex(document, message.action);
@@ -49,8 +50,8 @@ export async function activate(context: vscode.ExtensionContext) {
               selection: new vscode.Range(new vscode.Position(index, 0), new vscode.Position(index, 0)),
             };
             vscode.window.showTextDocument(document, options);
+            break;
         }
-
       },
       undefined,
       context.subscriptions
