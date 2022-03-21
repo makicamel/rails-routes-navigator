@@ -26,7 +26,8 @@ export class Routes {
   }
 
   public filterWith(text: string): Routes {
-    this.routes = this.allRoutes.filter((route) => route.isMatchedRoute(text));
+    const keywords = text.split(/\s+/);
+    this.routes = this.allRoutes.filter((route) => route.isMatchedRoute(keywords));
     return this;
   }
 
@@ -102,14 +103,13 @@ class Route {
     this.action = action;
   }
 
-  public isMatchedRoute(input: string): boolean {
-    return this.prefix.includes(input) ||
-      this.verb.includes(input) ||
-      this.verb.toLowerCase().includes(input) ||
-      this.uri.includes(input) ||
-      this.controller.includes(input) ||
-      this.action.includes(input) ||
-      this.controllerAction.includes(input);
+  public isMatchedRoute(keywords: Array<string>): boolean {
+    const target = `${this.prefix}${this.verb.toLowerCase()}${this.verb}${this.uri}${this.controller}#${this.action}`;
+    return keywords.reduce((previousValue: boolean, currentValue: string) => {
+      return previousValue && target.includes(currentValue);
+    },
+      true // initialValue
+    );
   }
 
   public createHtml(): string {
@@ -136,9 +136,5 @@ class Route {
 
   private get filePath(): string {
     return `app/controllers/${this.controller}_controller.rb`;
-  }
-
-  private get controllerAction(): string {
-    return `${this.controller}#${this.action}`;
   }
 }

@@ -101,7 +101,10 @@ function getWebviewContent(contents: Contents) {
   <h1>Rails Routes Navigator</h1>
   <div id="inputPanel">
     <button id="refreshButton"><img id="refreshImage" src="${contents.iconPath}" alt="Reload routes" /></button>
-    <input type="search" id="search" placeholder="Input some chars for Rails routes" />
+    <div>
+      <input type="search" id="search" placeholder="Input some chars for Rails routes" />
+      <span id="notes">Space-separated words are used as AND search.</span>
+    </div>
   </div>
 
   <table>

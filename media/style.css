@@ -57,7 +57,7 @@ td {
 #inputPanel {
   display: flex;
   width: 100%;
-  margin-bottom: 12px;
+  margin-bottom: 4px;
 }
 
 #refreshButton {
@@ -74,8 +74,16 @@ td {
 }
 
 #search {
+  display: block;
   width: 400px;
-  padding: 0 12px;
+  padding: 8px 12px;
   border: solid 1px;
   border-radius: 5px;
+}
+
+#notes {
+  display: block;
+  font-size: small;
+  margin-top: 4px;
+  margin-bottom: 12px;
 }
