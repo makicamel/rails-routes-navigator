@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { Routes } from './routes';
+import { Contents } from './contents';
 
 export async function activate(context: vscode.ExtensionContext) {
   let currentPanel: vscode.WebviewPanel | undefined = undefined;
@@ -31,9 +32,7 @@ export async function activate(context: vscode.ExtensionContext) {
       return;
     }
 
-    const scriptUri = vscode.Uri.file(path.join(context.extensionPath, 'src', 'script.js')).with({ scheme: 'vscode-resource' });
-    const stylesheetUri = vscode.Uri.file(path.join(context.extensionPath, 'src', 'style.css')).with({ scheme: 'vscode-resource' });
-    currentPanel.webview.html = getWebviewContent(currentPanel.webview, scriptUri, stylesheetUri);
+    currentPanel.webview.html = getWebviewContent(new Contents(currentPanel.webview, context));
     currentPanel.webview.postMessage({ routes: routes.createHtml() });
     currentPanel.webview.onDidReceiveMessage(
       async (message) => {
@@ -82,18 +81,21 @@ async function getActionIndex(document: vscode.TextDocument, action: string) {
   return 0;
 };
 
-function getWebviewContent(webview: vscode.Webview, scriptUri: vscode.Uri, stylesheetUri: vscode.Uri) {
+function getWebviewContent(contents: Contents) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' ${webview.cspSource} https:; script-src ${webview.cspSource} 'unsafe-inline'">
-  <script defer src="${scriptUri}" type="text/javascript"></script>
-  <link href="${stylesheetUri}" rel="stylesheet" type="text/css">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' ${contents.webview.cspSource} https:; script-src ${contents.webview.cspSource} 'unsafe-inline'">
+  <script defer src="${contents.scriptUri}" type="text/javascript"></script>
+  <link href="${contents.stylesheetUri}" rel="stylesheet" type="text/css">
   <title>Rails Routes Navigator</title>
 </head>
 <body>
   <h1>Rails Routes Navigator</h1>
-  <input type="search" id="search" placeholder="Input some chars for Rails routes" />
+  <div id="inputPanel">
+    <button id="refreshButton"><img id="refreshImage" src="${contents.iconPath}" alt="Reload routes" /></button>
+    <input type="search" id="search" placeholder="Input some chars for Rails routes" />
+  </div>
 
   <table>
     <thead>

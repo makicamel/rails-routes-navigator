@@ -51,10 +51,31 @@ thead td {
 }
 
 td {
-  padding: 2px 5px;
+  padding: 2px 4px;
+}
+
+#inputPanel {
+  display: flex;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+#refreshButton {
+  display: flex;
+  background-color: inherit;
+  border: 0;
+  margin: 8px;
+}
+
+#refreshImage {
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
 }
 
 #search {
-  width: 500px;
-  margin-bottom: 20px;
+  width: 400px;
+  padding: 0 12px;
+  border: solid 1px;
+  border-radius: 5px;
 }
