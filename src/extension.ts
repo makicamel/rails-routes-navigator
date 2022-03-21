@@ -11,6 +11,13 @@ export async function activate(context: vscode.ExtensionContext) {
       return;
     }
 
+    let routes: Routes;
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders) {
+      vscode.window.showErrorMessage('There is no workspace. Open workspace and then retry.');
+      return;
+    }
+
     currentPanel = vscode.window.createWebviewPanel(
       'railsRoutesNavigator',
       'Rails Routes Navigator',
@@ -21,14 +28,6 @@ export async function activate(context: vscode.ExtensionContext) {
       }
     );
     currentPanel.webview.html = getWebviewContent(new Contents(currentPanel.webview, context));
-
-    let routes: Routes;
-    const workspaceFolders = vscode.workspace.workspaceFolders;
-    if (!workspaceFolders) {
-      vscode.window.showErrorMessage('There is no workspace. Open workspace and then retry.');
-      return;
-    }
-
     currentPanel.webview.onDidReceiveMessage(
       async (message) => {
         switch (message.command) {
