@@ -25,7 +25,7 @@ export async function activate(context: vscode.ExtensionContext) {
     try {
       if (!workspaceFolders) { throw Error('There is no workspace.'); }
       routes = new Routes(workspaceFolders[0]);
-      routes.execRailsRoutes();
+      routes.loadRoutes();
     } catch (error) {
       vscode.window.showErrorMessage(`${error}`);
       return;

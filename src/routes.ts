@@ -13,8 +13,10 @@ export class Routes {
     this.routes = [];
   }
 
-  public execRailsRoutes(): void {
-    this.execAndSaveRoutes();
+  public loadRoutes(): void {
+    if (!fs.existsSync(this.routesFilePath)) {
+      this.execAndSaveRoutes();
+    }
     const routesString = this.load();
     this.routes = this.allRoutes = this.parse(routesString);
   }
