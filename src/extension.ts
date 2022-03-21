@@ -30,33 +30,33 @@ export async function activate(context: vscode.ExtensionContext) {
     currentPanel.webview.html = getWebviewContent(new Contents(currentPanel.webview, context));
     currentPanel.webview.onDidReceiveMessage(
       async (message) => {
-        switch (message.command) {
-          case 'search':
-            currentPanel?.webview.postMessage({ routes: routes.filterWith(message.text).createHtml() });
-            break;
-          case 'showTextDocument':
-            const document = await openDocument(workspaceFolders[0], message.filePath);
-            const index = await getActionIndex(document, message.action);
-            const options: vscode.TextDocumentShowOptions = {
-              viewColumn: vscode.ViewColumn.One,
-              selection: new vscode.Range(new vscode.Position(index, 0), new vscode.Position(index, 0)),
-            };
-            vscode.window.showTextDocument(document, options);
-            break;
-          case 'initializeRoutes':
-            try {
+        try {
+          switch (message.command) {
+            case 'search':
+              currentPanel?.webview.postMessage({ routes: routes.filterWith(message.text).createHtml() });
+              break;
+            case 'showTextDocument':
+              const document = await openDocument(workspaceFolders[0], message.filePath);
+              const index = await getActionIndex(document, message.action);
+              const options: vscode.TextDocumentShowOptions = {
+                viewColumn: vscode.ViewColumn.One,
+                selection: new vscode.Range(new vscode.Position(index, 0), new vscode.Position(index, 0)),
+              };
+              vscode.window.showTextDocument(document, options);
+              break;
+            case 'initializeRoutes':
               routes = new Routes(workspaceFolders[0]);
               routes.loadRoutes(false);
-            } catch (error) {
-              vscode.window.showErrorMessage(`${error}`);
-              return;
-            }
-            currentPanel?.webview.postMessage({ routes: routes.createHtml() });
-            break;
-          case 'refreshRoutes':
-            routes.loadRoutes(true);
-            currentPanel?.webview.postMessage({ routes: routes.createHtml() });
-            break;
+              currentPanel?.webview.postMessage({ routes: routes.createHtml() });
+              break;
+            case 'refreshRoutes':
+              routes.loadRoutes(true);
+              currentPanel?.webview.postMessage({ routes: routes.createHtml() });
+              break;
+          }
+        } catch (error) {
+          vscode.window.showErrorMessage(`${error}`);
+          return;
         }
       },
       undefined,
