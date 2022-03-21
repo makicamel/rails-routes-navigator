@@ -108,7 +108,8 @@ class Route {
       this.verb.toLowerCase().includes(input) ||
       this.uri.includes(input) ||
       this.controller.includes(input) ||
-      this.action.includes(input);
+      this.action.includes(input) ||
+      this.controllerAction.includes(input);
   }
 
   public createHtml(): string {
@@ -135,5 +136,9 @@ class Route {
 
   private get filePath(): string {
     return `app/controllers/${this.controller}_controller.rb`;
+  }
+
+  private get controllerAction(): string {
+    return `${this.controller}#${this.action}`;
   }
 }
