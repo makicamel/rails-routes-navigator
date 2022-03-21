@@ -26,7 +26,7 @@ export async function activate(context: vscode.ExtensionContext) {
     try {
       if (!workspaceFolders) { throw Error('There is no workspace.'); }
       routes = new Routes(workspaceFolders[0]);
-      routes.loadRoutes();
+      routes.loadRoutes(false);
     } catch (error) {
       vscode.window.showErrorMessage(`${error}`);
       return;
@@ -50,6 +50,10 @@ export async function activate(context: vscode.ExtensionContext) {
               selection: new vscode.Range(new vscode.Position(index, 0), new vscode.Position(index, 0)),
             };
             vscode.window.showTextDocument(document, options);
+            break;
+          case 'refreshRoutes':
+            routes.loadRoutes(true);
+            currentPanel?.webview.postMessage({ routes: routes.createHtml() });
             break;
         }
       },

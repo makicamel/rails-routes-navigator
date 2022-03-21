@@ -13,8 +13,8 @@ export class Routes {
     this.routes = [];
   }
 
-  public loadRoutes(): void {
-    if (!fs.existsSync(this.routesFilePath)) {
+  public loadRoutes(refresh: boolean): void {
+    if (refresh || !fs.existsSync(this.routesFilePath)) {
       this.execAndSaveRoutes();
     }
     const routesString = this.load();

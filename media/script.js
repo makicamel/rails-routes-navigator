@@ -30,3 +30,12 @@ function showTextDocument(filePath, action) {
     action: action
   });
 }
+
+const refreshButton = document.getElementById('refreshButton');
+refreshButton.onclick = (_) => {
+  search.value = '';
+  allRoutes.innerHTML = '<tr><td>Loading...</td></tr>';
+  vscode.postMessage({
+    command: 'refreshRoutes',
+  });
+};
