@@ -4,6 +4,7 @@ let previousRoutes = previousState ? previousState.routes : '<tr></tr>';
 let previousInputText = previousState ? previousState.inputText : '';
 
 const search = document.getElementById('search');
+search.focus();
 search.value = previousInputText;
 search.addEventListener('keyup', () => {
   vscode.postMessage({
