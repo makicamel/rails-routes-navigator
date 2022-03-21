@@ -20,27 +20,20 @@ export async function activate(context: vscode.ExtensionContext) {
         localResourceRoots: [vscode.Uri.file(path.join(context.extensionPath, 'media'))],
       }
     );
+    currentPanel.webview.html = getWebviewContent(new Contents(currentPanel.webview, context));
 
     let routes: Routes;
     const workspaceFolders = vscode.workspace.workspaceFolders;
-    try {
-      if (!workspaceFolders) { throw Error('There is no workspace.'); }
-      routes = new Routes(workspaceFolders[0]);
-      routes.loadRoutes(false);
-    } catch (error) {
-      vscode.window.showErrorMessage(`${error}`);
+    if (!workspaceFolders) {
+      vscode.window.showErrorMessage('There is no workspace. Open workspace and then retry.');
       return;
     }
 
-    currentPanel.webview.html = getWebviewContent(new Contents(currentPanel.webview, context));
-    currentPanel.webview.postMessage({ routes: routes.createHtml() });
     currentPanel.webview.onDidReceiveMessage(
       async (message) => {
         switch (message.command) {
           case 'search':
-            if (currentPanel) {
-              currentPanel.webview.postMessage({ routes: routes.filterWith(message.text).createHtml() });
-            }
+            currentPanel?.webview.postMessage({ routes: routes.filterWith(message.text).createHtml() });
             break;
           case 'showTextDocument':
             const document = await openDocument(workspaceFolders[0], message.filePath);
@@ -50,6 +43,16 @@ export async function activate(context: vscode.ExtensionContext) {
               selection: new vscode.Range(new vscode.Position(index, 0), new vscode.Position(index, 0)),
             };
             vscode.window.showTextDocument(document, options);
+            break;
+          case 'initializeRoutes':
+            try {
+              routes = new Routes(workspaceFolders[0]);
+              routes.loadRoutes(false);
+            } catch (error) {
+              vscode.window.showErrorMessage(`${error}`);
+              return;
+            }
+            currentPanel?.webview.postMessage({ routes: routes.createHtml() });
             break;
           case 'refreshRoutes':
             routes.loadRoutes(true);

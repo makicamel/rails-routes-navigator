@@ -1,6 +1,6 @@
 const vscode = acquireVsCodeApi();
 const previousState = vscode.getState();
-let previousRoutes = previousState ? previousState.routes : '<tr></tr>';
+let previousRoutes = previousState ? previousState.routes : '<tr><td>Loading...</td></tr>';
 let previousInputText = previousState ? previousState.inputText : '';
 
 const search = document.getElementById('search');
@@ -15,6 +15,10 @@ search.addEventListener('keyup', () => {
 
 const allRoutes = document.getElementById('allRoutes');
 allRoutes.innerHTML = previousRoutes;
+
+vscode.postMessage({
+  command: 'initializeRoutes',
+});
 
 window.addEventListener('message', event => {
   const inputText = search.value;
