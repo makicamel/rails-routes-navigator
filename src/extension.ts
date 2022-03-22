@@ -78,7 +78,7 @@ async function openDocument(workspaceFolder: vscode.WorkspaceFolder, filePath: s
 };
 
 async function getActionIndex(document: vscode.TextDocument, action: string) {
-  const regexp = new RegExp(`^\\s*def\\s+\\b${action}\\b\\s*$`);
+  const regexp = new RegExp(`^\\s*def\\s+\\b${action}\\b.*$`);
   for (let index = 0; index < document.lineCount; index++) {
     const line = document.lineAt(index);
     if (regexp.test(line.text)) {
