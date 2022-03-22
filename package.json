@@ -2,12 +2,25 @@
   "name": "rails-routes-navigator",
   "displayName": "Rails Routes Navigator",
   "description": "Display Routes of Rails, search incremental and navigate to the source location",
+  "publisher": "makicamel",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/makicamel/rails-routes-navigator"
+  },
+  "bugs": {
+    "url": "https://github.com/makicamel/rails-routes-navigator/issues"
+  },
+  "license": "MIT",
   "engines": {
     "vscode": "^1.65.0"
   },
   "categories": [
     "Other"
+  ],
+  "keywords": [
+    "Ruby on Rails",
+    "Rails"
   ],
   "activationEvents": [
     "onCommand:rails-routes-navigator.railsRoutesNavigate",
