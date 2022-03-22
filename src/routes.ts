@@ -34,6 +34,7 @@ export class Routes {
   private execAndSaveRoutes(): void {
     const stdout = execSync('bundle exec rails routes', {
       cwd: this.workSpaceFolder.uri.fsPath,
+      maxBuffer: 2048 * 1024
     });
     const routesHeader = 'Controller#Action';
     if (stdout.includes(routesHeader)) {
