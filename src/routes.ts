@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { WorkspaceFolder } from 'vscode';
-import { execSync } from 'child_process';
+import { spawn } from 'child_process';
 
 export class Routes {
   private _allRoutes!: Array<Route>;
@@ -15,7 +15,7 @@ export class Routes {
 
   public loadRoutes(refresh: boolean): void {
     if (refresh || !fs.existsSync(this.routesFilePath)) {
-      this.execAndSaveRoutes();
+      this.writeRoutes();
     }
     const routesString = this.load();
     this.routes = this.allRoutes = this.parse(routesString);
@@ -31,17 +31,12 @@ export class Routes {
     return this;
   }
 
-  private execAndSaveRoutes(): void {
-    const stdout = execSync('bundle exec rails routes', {
+  private writeRoutes(): void {
+    const task = spawn('bundle', ['exec', 'rails', 'routes'], {
       cwd: this.workSpaceFolder.uri.fsPath,
-      maxBuffer: 2048 * 1024
     });
-    const routesHeader = 'Controller#Action';
-    if (stdout.includes(routesHeader)) {
-      fs.writeFileSync(this.routesFilePath, stdout);
-    } else {
-      throw Error('Failed to exec rails routes 💎');
-    }
+    const dest = fs.createWriteStream(this.routesFilePath, 'utf8');
+    task.stdout.pipe(dest);
   }
 
   private load(): string {
