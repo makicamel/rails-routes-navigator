@@ -1,6 +1,8 @@
 import * as fs from 'fs';
+import * as readline from 'readline';
 import { WorkspaceFolder } from 'vscode';
 import { spawn } from 'child_process';
+import { Readable } from 'stream';
 
 export class Routes {
   private _allRoutes!: Array<Route>;
@@ -13,12 +15,54 @@ export class Routes {
     this.routes = [];
   }
 
-  public loadRoutes(refresh: boolean): void {
+  public async loadRoutes(refresh: boolean): Promise<void> {
+    let readStream: Readable;
     if (refresh || !fs.existsSync(this.routesFilePath)) {
-      this.writeRoutes();
+      readStream = this.execRailsRoutes();
+    } else {
+      readStream = fs.createReadStream(this.routesFilePath);
     }
-    const routesString = this.load();
-    this.routes = this.allRoutes = this.parse(routesString);
+    await this.putRoutes(readStream);
+  }
+
+  private execRailsRoutes(): Readable {
+    const exec = spawn('bundle', ['exec', 'rails', 'routes'], {
+      cwd: this.workSpaceFolder.uri.fsPath,
+    });
+    const write = fs.createWriteStream(this.routesFilePath, 'utf8');
+    exec.stdout.pipe(write);
+    return exec.stdout;
+  }
+
+  private async putRoutes(readStream: Readable): Promise<void> {
+    this.routes = this.allRoutes = [];
+    const lines: readline.Interface = readline.createInterface({
+      input: readStream
+    });
+
+    for await (const line of lines) {
+      const route = await this.parse(line);
+      if (route) { this.allRoutes.push(route); }
+    }
+    lines.on('close', () => {
+      this.routes = this.allRoutes;
+    });
+  }
+
+  private async parse(line: string): Promise<Route | undefined> {
+    if (!/(GET|POST|PUT|PATCH|DELETE)/.test(line)) { return; }
+
+    const routesFragments = line.match(/\s*([\s\w]+)\s+([|\w]+)\s+([-_/\w().:]+)\s+([/\w]+)#([/\w]+)/)?.slice(1);
+    if (routesFragments) {
+      return new Route(
+        routesFragments[0], // prefix
+        routesFragments[1], // verb
+        routesFragments[2], // uri
+        routesFragments[3], // controller
+        routesFragments[4], // action
+        this.allRoutes[this.allRoutes.length - 1] // previousRoute
+      );
+    }
   }
 
   public createHtml(): string {
@@ -29,38 +73,6 @@ export class Routes {
     const keywords = text.split(/\s+/);
     this.routes = this.allRoutes.filter((route) => route.isMatchedRoute(keywords));
     return this;
-  }
-
-  private writeRoutes(): void {
-    const task = spawn('bundle', ['exec', 'rails', 'routes'], {
-      cwd: this.workSpaceFolder.uri.fsPath,
-    });
-    const dest = fs.createWriteStream(this.routesFilePath, 'utf8');
-    task.stdout.pipe(dest);
-  }
-
-  private load(): string {
-    return fs.readFileSync(this.routesFilePath).toString();
-  }
-
-  private parse(routesString: string): Array<Route> {
-    const lines = routesString.split(/[\n\r\n]/).filter(line => /(GET|POST|PUT|PATCH|DELETE)/.test(line));
-    const routes: Array<Route> = [];
-    lines.forEach((line) => {
-      const routesFragments = line.match(/\s*([\s\w]+)\s+([|\w]+)\s+([-_/\w().:]+)\s+([/\w]+)#([/\w]+)/)?.slice(1);
-      if (routesFragments) {
-        const route = new Route(
-          routesFragments[0], // prefix
-          routesFragments[1], // verb
-          routesFragments[2], // uri
-          routesFragments[3], // controller
-          routesFragments[4], // action
-          routes[routes.length - 1] // previousRoute
-        );
-        routes.push(route);
-      }
-    });
-    return routes;
   }
 
   private get routesFilePath(): string {

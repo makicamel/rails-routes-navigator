@@ -46,11 +46,11 @@ export async function activate(context: vscode.ExtensionContext) {
               break;
             case 'initializeRoutes':
               routes = new Routes(workspaceFolders[0]);
-              routes.loadRoutes(false);
+              await routes.loadRoutes(false);
               currentPanel?.webview.postMessage({ routes: routes.createHtml() });
               break;
             case 'refreshRoutes':
-              routes.loadRoutes(true);
+              await routes.loadRoutes(true);
               currentPanel?.webview.postMessage({ routes: routes.createHtml() });
               break;
           }
