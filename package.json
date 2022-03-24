@@ -12,6 +12,7 @@
     "url": "https://github.com/makicamel/rails-routes-navigator/issues"
   },
   "license": "MIT",
+  "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.65.0"
   },
