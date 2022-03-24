@@ -3,7 +3,7 @@
   "displayName": "Rails Routes Navigator",
   "description": "Display Routes of Rails, search incremental and navigate to the source location",
   "publisher": "makicamel",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/makicamel/rails-routes-navigator"
